@@ -8,12 +8,14 @@ from PIL import Image
 import os
 import numpy as np
 
-cascadePath = "haarcascade_frontalface_alt.xml"
-faceCascade = cv.CascadeClassifier(cascadePath)
+face_cascadePath = "haarcascade_frontalface_alt.xml"
+eye_cascadePath = "haarcascade_eye.xml"
+faceCascade = cv.CascadeClassifier(face_cascadePath)
+eye_cascade = cv.CascadeClassifier(eye_cascadePath)
 
-destination_path = "./train_set/"
-origin_path = "./scaled_train_set/"
-image_name = "test0"
+destination_path = "./scaled_train_set/"
+origin_path = "./train_set"
+image_name = "train0"
 
 
 # Size of the resulting box from the image
@@ -27,6 +29,7 @@ def DetectFace(image, faceCascade, returnImage=False):
 
     # Detect the faces
     faces = faceCascade.detectMultiScale(image)
+    
     # Use exeption to handle the case when no face has been found and size of array is 0
     try:
         face_exists=faces.any()
@@ -37,7 +40,9 @@ def DetectFace(image, faceCascade, returnImage=False):
             # Convert bounding box to two CvPoints
             pt1 = (int(x), int(y))
             pt2 = (int(x + w), int(y + h))
+            
             cv.rectangle(image, pt1, pt2, (255, 0, 0), 5, 8, 0)
+            
         
     if returnImage:
         return image
@@ -76,8 +81,14 @@ def faceCrop(path,boxScale=1):
         if faces_size != 0:
             n=1
             for face in faces:
+                
                 croppedImage=imgCrop(pil_im, face,boxScale=boxScale)
+                eyes = eye_cascade.detectMultiScale(croppedImage)
+                for (ex,ey,ew,eh) in eyes:
+                    cv.rectangle(croppedImage,(ex,ey),(ex+ew,ey+eh),(0,255,0),2)
+                    cv.imshow('img',croppedImage)
                 croppedImage = croppedImage.resize((basewidth,basewidth), PIL.Image.ANTIALIAS)
+                
                 fname,ext=os.path.splitext(img)
                 filename = img[img.find(image_name)+0:].split()[0]
                 print filename
@@ -87,10 +98,10 @@ def faceCrop(path,boxScale=1):
 
 # Prompts user to enter relative path to the images in the same folder as the program
 # e.g. "./scaled_train_set/" is the correct form to enter destination path
-origin_path = raw_input("Enter folder where images are located:")
-destination_path = raw_input("Enter folder where to save new images:")
+#origin_path = raw_input("Enter folder where images are located:")
+#destination_path = raw_input("Enter folder where to save new images:")
 # Necessary to ensure that filename can be correctly preserved during conversion
-image_name = raw_input("Enter image name e.g. train0 or test0:")
+#image_name = raw_input("Enter image name e.g. train0 or test0:")
 
 # Launch the conversion
 faceCrop(origin_path, boxScale=1)

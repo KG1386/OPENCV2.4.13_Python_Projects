@@ -98,11 +98,11 @@ if var == "N":
 
     # Perform the tranining
     recognizer_LBPH.train(images, np.array(labels))
-    # recognizer_Fisher.train(images, np.array(labels))
+    recognizer_Fisher.train(images, np.array(labels))
     
     # Save the model to save time
     recognizer_LBPH.save("LBPH_face_train_model")
-    # recognizer_Fisher.save("Fisher_face_train_model")
+    recognizer_Fisher.save("Fisher_face_train_model")
     print "Model trained"
 elif var == "U":
     # Add extra images to the model
