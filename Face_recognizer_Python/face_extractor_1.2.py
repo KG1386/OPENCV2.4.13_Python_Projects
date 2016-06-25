@@ -13,6 +13,7 @@ faceCascade = cv.CascadeClassifier(cascadePath)
 
 destination_path = "./train_set/"
 origin_path = "./scaled_train_set/"
+image_name = "test0"
 
 print origin_path
 # Size of the resulting box from the image
@@ -80,7 +81,7 @@ def faceCrop(path,boxScale=1):
                 croppedImage=imgCrop(pil_im, face,boxScale=boxScale)
                 croppedImage = croppedImage.resize((basewidth,basewidth), PIL.Image.ANTIALIAS)
                 fname,ext=os.path.splitext(img)
-                filename = img[img.find("train0")+0:].split()[0]
+                filename = img[img.find(image_name)+0:].split()[0]
                 print filename
                 croppedImage.save(destination_path + filename,'JPEG')
                 n+=1
@@ -90,5 +91,6 @@ def faceCrop(path,boxScale=1):
 # e.g. "./scaled_train_set/" is the correct form to enter destination path
 origin_path = raw_input("Enter folder where images are located:")
 destination_path = raw_input("Enter folder where to save new images:")
+image_name = raw_input("Enter image name e.g. train0 or test0:")
 
 faceCrop(origin_path, boxScale=1)
