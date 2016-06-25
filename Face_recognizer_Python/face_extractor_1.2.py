@@ -1,10 +1,10 @@
 # Converts images to grayscale, finds face in the image and crops the rest
 # saves the new image into another folder
-
+# Most of the code taken from http://stackoverflow.com/questions/13211745/detect-face-then-autocrop-pictures
+# Updated to fit Python 2.7.5 and OpenCV 2.4.13
 import cv2 as cv #Opencv
 import PIL
 from PIL import Image
-import glob
 import os
 import numpy as np
 
@@ -15,10 +15,11 @@ destination_path = "./train_set/"
 origin_path = "./scaled_train_set/"
 image_name = "test0"
 
-print origin_path
+
 # Size of the resulting box from the image
 basewidth = 300
 
+# Function that extracts faces from the image and returns them to main funtion
 def DetectFace(image, faceCascade, returnImage=False):
 
     # Equalize the histogram
@@ -43,10 +44,6 @@ def DetectFace(image, faceCascade, returnImage=False):
     else:
         return faces
 
-def cv2pil(cv_im):
-    # Convert the cv image to a PIL image
-    return Image.fromstring("L", cv.GetSize(cv_im), cv_im.tostring())
-
 def imgCrop(image, cropBox, boxScale=1):
     # Crop a PIL image with the provided box [x(left), y(upper), w(width), h(height)]
 
@@ -59,6 +56,7 @@ def imgCrop(image, cropBox, boxScale=1):
 
     return image.crop(PIL_box)
 
+# Main function, goes over all images in origin folder and extracts the face from them
 def faceCrop(path,boxScale=1):
     
     faceCascade = cv.CascadeClassifier('haarcascade_frontalface_alt.xml')
@@ -91,6 +89,8 @@ def faceCrop(path,boxScale=1):
 # e.g. "./scaled_train_set/" is the correct form to enter destination path
 origin_path = raw_input("Enter folder where images are located:")
 destination_path = raw_input("Enter folder where to save new images:")
+# Necessary to ensure that filename can be correctly preserved during conversion
 image_name = raw_input("Enter image name e.g. train0 or test0:")
 
+# Launch the conversion
 faceCrop(origin_path, boxScale=1)
